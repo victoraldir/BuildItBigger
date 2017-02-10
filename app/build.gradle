@@ -48,3 +48,36 @@ dependencies {
     compile project(path: ':backend', configuration: 'android-endpoints')
 
 }
+
+
+/**
+ * Write a Gradle task that starts the GCE dev server, runs all the Android tests,
+ * and shuts down the dev server.
+ */
+
+task runServer{
+    dependsOn ':backend:appengineRun'
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+    doLast{
+        println 'Should bring GAE up running'
+    }
+}
+
+task runTest{
+    mustRunAfter 'runServer'
+    dependsOn ':app:connectedAndroidTest'
+    finalizedBy ':backend:appengineStop'
+
+    doLast{
+        println 'Should be running test and shutdown the server afterwards'
+    }
+}
+
+task runTestAutomation{
+    dependsOn = ['runServer','runTest']
+    doLast{
+        println 'Test complete'
+    }
+}

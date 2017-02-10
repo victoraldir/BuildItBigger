@@ -27,10 +27,8 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
     private InterstitialAd mInterstitialAd;
     private Button mBtnShowJoke;
     private ProgressBar mProgressBar;
-
     private String jokeReceived;
-    private boolean flagAdIsOpen = false;
-
+    private AdManager adManager;
 
     public MainActivityFragment() {
     }
@@ -49,7 +47,7 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
         mInterstitialAd = new InterstitialAd(getActivity());
         mInterstitialAd.setAdUnitId(getString(R.string.banner_ad_unit_id));
 
-        AdManager adManager = new AdManager();
+        adManager = new AdManager();
 
         mInterstitialAd.setAdListener(adManager);
 
@@ -83,6 +81,7 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
     private void showInterstitialAd(){
         if(mInterstitialAd.isLoaded()){
             mInterstitialAd.show();
+            adManager.flagAdIsOpen = true;
         }
     }
 
@@ -91,25 +90,22 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 
         jokeReceived = joke;
         mProgressBar.setVisibility(View.INVISIBLE);
-
         launchJokeActivity();
 
     }
 
     private void launchJokeActivity(){
 
-        if(!flagAdIsOpen && !mProgressBar.isActivated()){
+        if(!mProgressBar.isActivated() && !adManager.flagAdIsOpen){
 
-            if(!jokeReceived.isEmpty()) {
+            if(jokeReceived != null && !jokeReceived.isEmpty()) {
 
                 Intent it = new Intent(getActivity(), JokeActivity.class);
                 it.putExtra(JokeActivity.EXTRA_JOKE, jokeReceived);
                 startActivity(it);
 
             }else{
-
                 Toast.makeText(getActivity(),getString(R.string.error),Toast.LENGTH_SHORT).show();
-
             }
 
         }
@@ -125,10 +121,16 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
 
     public class AdManager extends AdListener{
 
+        public boolean flagAdIsOpen;
+
+        public AdManager(){
+            flagAdIsOpen = false;
+        }
+
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            flagAdIsOpen = true;
+            //flagAdIsOpen = true;
         }
 
         @Override

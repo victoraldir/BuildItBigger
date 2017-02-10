@@ -50,17 +50,19 @@ public class MainActivityFragment extends Fragment implements View.OnClickListen
     @Override
     public void onJokeReceived(String joke) {
 
-        mProgressBar.setVisibility(View.INVISIBLE);
+        if(getActivity() != null) {
 
-        if(!joke.isEmpty()) {
+            mProgressBar.setVisibility(View.INVISIBLE);
 
-            Intent it = new Intent(getActivity(), JokeActivity.class);
-            it.putExtra(JokeActivity.EXTRA_JOKE, joke);
-            startActivity(it);
-        }else{
-            Toast.makeText(getActivity(),getString(R.string.error),Toast.LENGTH_SHORT).show();
+            if (!joke.isEmpty()) {
+
+                Intent it = new Intent(getActivity(), JokeActivity.class);
+                it.putExtra(JokeActivity.EXTRA_JOKE, joke);
+                startActivity(it);
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.error), Toast.LENGTH_SHORT).show();
+            }
+
         }
-
-
     }
 }
